@@ -7,6 +7,7 @@ public class OrderFilter {
   private String pmethod;
   private String orderNo;
   private Customer customer;
+  private String nombre;
 
   public String getPmethod() {
     return pmethod;
@@ -30,5 +31,13 @@ public class OrderFilter {
 
   public void setCustomer(Customer customer) {
     this.customer = customer;
+  }
+
+  public String getNombre() {
+    return nombre;
+  }
+
+  public void setNombre(String nombre) {
+    this.nombre = nombre;
   }
 }

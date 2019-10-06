@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hibernate.TransientPropertyValueException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -36,6 +38,16 @@ public class RestaurantExceptionHandler extends ResponseEntityExceptionHandler {
     return handleExceptionInternal(ex, errores, headers, HttpStatus.BAD_REQUEST , request);
   }
 
+  @ExceptionHandler({NoSuchElementException.class})
+  public ResponseEntity<Object> handleNoSuchElementException(NoSuchElementException ex,
+         WebRequest request){
+
+    String mensajeUsuario=messageSource.getMessage("recurso.no-encontrado",null, LocaleContextHolder.getLocale());
+    String mensajeDesarrollador= ExceptionUtils.getRootCauseMessage(ex);
+    List<Error> errores= Arrays.asList(new Error(mensajeUsuario,mensajeDesarrollador));
+
+    return handleExceptionInternal(ex, errores, new HttpHeaders(),HttpStatus.NOT_FOUND, request);
+  }
 
   protected ResponseEntity<Object> handleMethodArgumentNotValid (MethodArgumentNotValidException ex,
       HttpHeaders headers, HttpStatus status, WebRequest request){
@@ -52,23 +64,22 @@ public class RestaurantExceptionHandler extends ResponseEntityExceptionHandler {
   {
 
     String mensajeUsuario=messageSource.getMessage("recurso.no-encontrado",null, LocaleContextHolder.getLocale());
-    String mensajeDesarrollador=ex.toString();
+    String mensajeDesarrollador=ExceptionUtils.getRootCauseMessage(ex);
     List<Error> errores= Arrays.asList(new Error(mensajeUsuario,mensajeDesarrollador));
 
     return handleExceptionInternal(ex, errores, new HttpHeaders(),HttpStatus.NOT_FOUND, request);
   }
 
 
-  @ExceptionHandler({NoSuchElementException.class})
-  public ResponseEntity<Object> handleNoSuchElementException(NoSuchElementException ex, WebRequest request){
-
-    String mensajeUsuario=messageSource.getMessage("recurso.no-encontrado",null, LocaleContextHolder.getLocale());
-    String mensajeDesarrollador=ex.toString();
+  @ExceptionHandler({TransientPropertyValueException.class})
+  public ResponseEntity<Object> handleTransientPropertyValueException(TransientPropertyValueException ex,WebRequest request )
+  {
+    String mensajeUsuario=messageSource.getMessage("valor.no-seteado",null, LocaleContextHolder.getLocale());
+    String mensajeDesarrollador=ExceptionUtils.getRootCauseMessage(ex);
     List<Error> errores= Arrays.asList(new Error(mensajeUsuario,mensajeDesarrollador));
 
     return handleExceptionInternal(ex, errores, new HttpHeaders(),HttpStatus.NOT_FOUND, request);
-  }
-
+   }
 
   private List<Error> crearListaDeErrores(BindingResult bindingResult) {
     List<Error> errores= new ArrayList<>();
