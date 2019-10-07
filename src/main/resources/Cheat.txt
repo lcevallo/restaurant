@@ -1,0 +1,6 @@
+Model
+Resource
+Repository -> (Query, Impl) -->Filtro, Paginacion (Ver, Eliminar)
+		|
+		->Clase (Filter) propiedades casi iguales al modelo
+Service ( Guardar, Actualizar)		 		
