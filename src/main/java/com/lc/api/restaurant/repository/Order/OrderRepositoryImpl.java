@@ -111,7 +111,7 @@ public class OrderRepositoryImpl implements OrderRepositoryQuery{
       );
     }
 
-//TODO: no me funciona aun pero ya lo arreglare
+
     if(!StringUtils.isEmpty(orderFilter.getNombre())){
 
       predicates.add( builder.like(
