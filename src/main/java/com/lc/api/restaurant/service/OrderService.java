@@ -42,8 +42,9 @@ public class OrderService {
     if(!customerOptional.isPresent()){
       throw new ClienteInexistenteException();
     }
-
-    return orderRepository.save(order);
+    Order orderG = new Order();
+    BeanUtils.copyProperties(order,orderG,"OrderItem");
+    return orderRepository.save(orderG);
   }
 
 

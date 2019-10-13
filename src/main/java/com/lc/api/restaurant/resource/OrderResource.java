@@ -6,6 +6,7 @@ import com.lc.api.restaurant.exceptionhandler.RestaurantExceptionHandler.Error;
 import com.lc.api.restaurant.models.Order;
 import com.lc.api.restaurant.repository.OrderRepository;
 import com.lc.api.restaurant.repository.filter.OrderFilter;
+import com.lc.api.restaurant.service.OrderItemService;
 import com.lc.api.restaurant.service.OrderService;
 import com.lc.api.restaurant.service.exception.ClienteInexistenteException;
 import java.util.Arrays;
@@ -46,6 +47,9 @@ public class OrderResource {
   private OrderService orderService;
 
   @Autowired
+  private OrderItemService orderItemService;
+
+  @Autowired
   private MessageSource messageSource;
 
   @GetMapping
@@ -69,9 +73,17 @@ public class OrderResource {
   public ResponseEntity<Order> crear(@Valid @RequestBody Order order, HttpServletResponse response )
   {
     Order orderSalvar = orderService.guardar(order);
+    order.getOrderItems().stream().forEach(
+        orden -> {
+          order.setOrderId(orderSalvar.getOrderId());
+          this.orderItemService.guardar(orden);
+        }
+    );
 
-    publisher.publishEvent(new RecursoCreadoEvent(this, response, orderSalvar.getOrderId()));
-    return ResponseEntity.status(HttpStatus.CREATED).body(orderSalvar);
+    Order orderResult = this.orderRepository.findById(orderSalvar.getOrderId()).get();
+
+    publisher.publishEvent(new RecursoCreadoEvent(this, response, orderResult.getOrderId()));
+    return ResponseEntity.status(HttpStatus.CREATED).body(orderResult);
   }
 
   @ExceptionHandler({ClienteInexistenteException.class})

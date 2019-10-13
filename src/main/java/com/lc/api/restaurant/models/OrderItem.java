@@ -1,5 +1,6 @@
 package com.lc.api.restaurant.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,11 +23,12 @@ public class OrderItem implements Serializable {
   @GeneratedValue(strategy= GenerationType.IDENTITY)
   private Long orderItemId;
 
-  @JoinColumn(name = "order_id", referencedColumnName = "order_id")
   @ManyToOne
+  @JoinColumn(name = "order_id")
+  @JsonIgnoreProperties("orderItems")
   private Order orderId;
 
-   @JoinColumn(name = "item_id", referencedColumnName = "item_id")
+  @JoinColumn(name = "item_id", referencedColumnName = "item_id")
   @ManyToOne
   private Item itemId;
 
