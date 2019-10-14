@@ -43,9 +43,24 @@ http://localhost:8080/order_item/1
                         {"orderItemId":null,"orderId":null,"ItemName":"Chicken Tenders","itemId":"1","Price":3.5,"quantity":"5","total":17.5}
                        ]
         }
+        {"orderId":null,
+          "orderNo":"984110",
+          "customer":{"customerId":"4"},
+          "pmethod":"Cash",
+          "gtotal":10.98,
+          "orderItems":[
+                  {"orderItemId":null,"orderId":null,"quantity":"2","total":7,
+                      "itemId":{"itemId":"1","name":"Chicken Tenders","price":3.5}},
+                  {"orderItemId":null,"orderId":null,"quantity":"2","total":3.98,
+                      "itemId":{"itemId":"7","name":"Lettuce and Tomato Burger ","price":1.99}}
+                      ]
+         }
         
         LISTO FUNCIONA y esta completo el rest api
         Ahora haremos el CORS como parte final
+        
+        
+        customer
         
         
         

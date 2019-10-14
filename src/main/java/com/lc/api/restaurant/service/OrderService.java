@@ -35,7 +35,7 @@ public class OrderService {
       throw new ClienteInexistenteException();
     }
 
-    Customer customer = orderExistente.get().getCustomer();
+    Customer customer = order.getCustomer();
 
     Optional<Customer> customerOptional = this.customerRepository.findById(customer.getCustomerId());
 
@@ -43,7 +43,7 @@ public class OrderService {
       throw new ClienteInexistenteException();
     }
     Order orderG = new Order();
-    BeanUtils.copyProperties(order,orderG,"OrderItem");
+    BeanUtils.copyProperties(order,orderG,"orderId","");
     return orderRepository.save(orderG);
   }
 
@@ -65,7 +65,7 @@ public class OrderService {
       throw new ClienteInexistenteException();
     }
 
-    BeanUtils.copyProperties(order,orderSalva,"orderId");
+    BeanUtils.copyProperties(order,orderSalva,"orderId","orderItems");
 
     return orderRepository.save(orderSalva);
 

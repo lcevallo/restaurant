@@ -73,9 +73,10 @@ public class OrderResource {
   public ResponseEntity<Order> crear(@Valid @RequestBody Order order, HttpServletResponse response )
   {
     Order orderSalvar = orderService.guardar(order);
-    order.getOrderItems().stream().forEach(
+
+    order.getOrderItems().forEach(
         orden -> {
-          order.setOrderId(orderSalvar.getOrderId());
+          orden.setOrderId(orderSalvar);
           this.orderItemService.guardar(orden);
         }
     );

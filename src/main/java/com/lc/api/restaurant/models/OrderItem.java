@@ -2,6 +2,7 @@ package com.lc.api.restaurant.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -35,6 +37,9 @@ public class OrderItem implements Serializable {
   @NotNull
   @Column(name = "quantity")
   private Integer quantity;
+
+  @Transient
+  private BigDecimal total;
 
   public Long getOrderItemId() {
     return orderItemId;
@@ -66,5 +71,13 @@ public class OrderItem implements Serializable {
 
   public void setQuantity(Integer quantity) {
     this.quantity = quantity;
+  }
+
+  public BigDecimal getTotal() {
+    return total;
+  }
+
+  public void setTotal(BigDecimal total) {
+    this.total = total;
   }
 }
