@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -38,7 +37,7 @@ public class OrderItem implements Serializable {
   @Column(name = "quantity")
   private Integer quantity;
 
-  @Transient
+  @Column(name = "total")
   private BigDecimal total;
 
   public Long getOrderItemId() {

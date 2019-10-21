@@ -4,6 +4,8 @@ package com.lc.api.restaurant.resource;
 import com.lc.api.restaurant.event.RecursoCreadoEvent;
 import com.lc.api.restaurant.exceptionhandler.RestaurantExceptionHandler.Error;
 import com.lc.api.restaurant.models.Order;
+import com.lc.api.restaurant.models.OrderItem;
+import com.lc.api.restaurant.repository.OrderItemRepository;
 import com.lc.api.restaurant.repository.OrderRepository;
 import com.lc.api.restaurant.repository.filter.OrderFilter;
 import com.lc.api.restaurant.service.OrderItemService;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,6 +51,9 @@ public class OrderResource {
 
   @Autowired
   private OrderItemService orderItemService;
+
+  @Autowired
+  private OrderItemRepository orderItemRepository;
 
   @Autowired
   private MessageSource messageSource;
@@ -87,6 +93,49 @@ public class OrderResource {
     return ResponseEntity.status(HttpStatus.CREATED).body(orderResult);
   }
 
+  @PutMapping("/{codigo}")
+  public ResponseEntity<Order> actualizar(@PathVariable Long codigo,@Valid @RequestBody Order order){
+    try{
+      Order orderSalva = orderService.actualizar(codigo,order);
+
+      order.getOrderItems().forEach(
+          ordenItem -> {
+                ordenItem.setOrderId(orderSalva);
+                if(ordenItem.getOrderItemId() != null){
+                      this.orderItemService.actualizar(ordenItem.getOrderItemId(),ordenItem);
+
+                } else {
+                        this.orderItemService.guardar(ordenItem);
+                }
+          }
+      );
+
+      if(order.getDeletedOrderItemIds()!= null && order.getDeletedOrderItemIds().length()>0)
+      {
+        Arrays.stream(order.getDeletedOrderItemIds().split(",")).forEach(
+            x -> {
+              if(!StringUtils.isEmpty(x)){
+                Optional<OrderItem> orderItemOpt = this.orderItemRepository.findById(Long.parseLong(x));
+                if(orderItemOpt.isPresent())
+                {
+                  this.orderItemRepository.deleteById(Long.parseLong(x));
+                }
+              }
+            }
+        );
+
+      }
+
+
+
+      return ResponseEntity.ok(orderSalva);
+
+    }
+    catch (IllegalArgumentException e){
+      return ResponseEntity.notFound().build();
+    }
+  }
+
   @ExceptionHandler({ClienteInexistenteException.class})
   public ResponseEntity<Object> handleClienteInexistenteException(ClienteInexistenteException ex)
   {
@@ -97,21 +146,26 @@ public class OrderResource {
     return ResponseEntity.badRequest().body(errores);
   }
 
-  @PutMapping("/{codigo}")
-  public ResponseEntity<Order> actualizar(@PathVariable Long codigo,@Valid @RequestBody Order order){
-    try{
-      Order orderSalva = orderService.actualizar(codigo,order);
-      return ResponseEntity.ok(orderSalva);
-    }
-    catch (IllegalArgumentException e){
-      return ResponseEntity.notFound().build();
-    }
-  }
+
 
 
   @DeleteMapping("/{codigo}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void remover(@PathVariable Long codigo){
+
+    Optional<Order> orderOptional = this.orderRepository.findById(codigo);
+
+    if(orderOptional.isPresent()){
+      Order order = orderOptional.get();
+
+         order.getOrderItems().forEach(
+             item -> {
+               this.orderItemRepository.deleteById(item.getOrderItemId());
+             }
+         );
+
+    }
+
     orderRepository.deleteById(codigo);
   }
 

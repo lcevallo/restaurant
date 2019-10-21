@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -50,6 +51,10 @@ public class Order implements Serializable {
   )
  @JsonIgnoreProperties("orderId")
  private List<OrderItem> orderItems = new ArrayList<>();
+
+
+  @Transient
+  private String deletedOrderItemIds;
 
   public Order() {
   }
@@ -100,5 +105,13 @@ public class Order implements Serializable {
 
   public void setOrderItems(List<OrderItem> orderItems) {
     this.orderItems = orderItems;
+  }
+
+  public String getDeletedOrderItemIds() {
+    return deletedOrderItemIds;
+  }
+
+  public void setDeletedOrderItemIds(String deletedOrderItemIds) {
+    this.deletedOrderItemIds = deletedOrderItemIds;
   }
 }
